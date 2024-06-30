@@ -1,0 +1,37 @@
+{
+  "name": "blog-service",
+  "version": "1.0.0",
+  "description": "a backend service for the jblog ui",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/ArullamudhaneLC/blog-service.git"
+  },
+  "author": "arullamudhane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ArullamudhaneLC/blog-service/issues"
+  },
+  "homepage": "https://github.com/ArullamudhaneLC/blog-service#readme",
+  "dependencies": {
+    "axios": "^1.7.2",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-validator": "^7.1.0",
+    "install": "^0.13.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-fetch": "^2.7.0",
+    "npm": "^10.8.1",
+    "pg": "^8.12.0",
+    "sequelize": "^6.37.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
