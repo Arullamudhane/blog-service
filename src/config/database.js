@@ -43,99 +43,98 @@ const setupDatabase = async () => {
     // If Users table doesn't exist, create it
     if (usersTableCheck.rows.length === 0) {
       console.log(`Creating Users table...`);
-      await pool.query(`
-        
+      // await pool.query(`
 
-        CREATE TABLE Roles (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          name VARCHAR(50) UNIQUE NOT NULL,
-          description TEXT
-        );
+      //   CREATE TABLE Roles (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     name VARCHAR(50) UNIQUE NOT NULL,
+      //     description TEXT
+      //   );
 
-        CREATE TABLE Users (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          email VARCHAR(255) UNIQUE NOT NULL,
-          password_hash VARCHAR(255),
-          google_id VARCHAR(255),
-          name VARCHAR(255) NOT NULL,
-          profile_picture_url VARCHAR(255),
-          role_id UUID REFERENCES Roles(id),
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+      //   CREATE TABLE Users (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     email VARCHAR(255) UNIQUE NOT NULL,
+      //     password_hash VARCHAR(255),
+      //     google_id VARCHAR(255),
+      //     name VARCHAR(255) NOT NULL,
+      //     profile_picture_url VARCHAR(255),
+      //     role_id UUID REFERENCES Roles(id),
+      //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      //   );
 
-        CREATE TABLE Subscriptions (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          user_id UUID REFERENCES Users(id),
-          subscription_type VARCHAR(50) NOT NULL,
-          start_date TIMESTAMP NOT NULL,
-          end_date TIMESTAMP,
-          status VARCHAR(50) NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+      //   CREATE TABLE Subscriptions (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     user_id UUID REFERENCES Users(id),
+      //     subscription_type VARCHAR(50) NOT NULL,
+      //     start_date TIMESTAMP NOT NULL,
+      //     end_date TIMESTAMP,
+      //     status VARCHAR(50) NOT NULL,
+      //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      //   );
 
-        CREATE TABLE Payments (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          user_id UUID REFERENCES Users(id),
-          amount DECIMAL(10, 2) NOT NULL,
-          currency VARCHAR(10) NOT NULL,
-          payment_date TIMESTAMP NOT NULL,
-          payment_method VARCHAR(50) NOT NULL,
-          transaction_id VARCHAR(255) UNIQUE NOT NULL,
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+      //   CREATE TABLE Payments (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     user_id UUID REFERENCES Users(id),
+      //     amount DECIMAL(10, 2) NOT NULL,
+      //     currency VARCHAR(10) NOT NULL,
+      //     payment_date TIMESTAMP NOT NULL,
+      //     payment_method VARCHAR(50) NOT NULL,
+      //     transaction_id VARCHAR(255) UNIQUE NOT NULL,
+      //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      //   );
 
-        CREATE TABLE Blogs (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          user_id UUID REFERENCES Users(id),
-          title VARCHAR(255) NOT NULL,
-          content TEXT NOT NULL,
-          read_duration INTEGER,
-          posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          is_premium BOOLEAN DEFAULT FALSE
-        );
+      //   CREATE TABLE Blogs (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     user_id UUID REFERENCES Users(id),
+      //     title VARCHAR(255) NOT NULL,
+      //     content TEXT NOT NULL,
+      //     read_duration INTEGER,
+      //     posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     is_premium BOOLEAN DEFAULT FALSE
+      //   );
 
-        CREATE TABLE Tags (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          name VARCHAR(50) UNIQUE NOT NULL
-        );
+      //   CREATE TABLE Tags (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     name VARCHAR(50) UNIQUE NOT NULL
+      //   );
 
-        CREATE TABLE BlogTags (
-          blog_id UUID REFERENCES Blogs(id),
-          tag_id UUID REFERENCES Tags(id),
-          PRIMARY KEY (blog_id, tag_id)
-        );
+      //   CREATE TABLE BlogTags (
+      //     blog_id UUID REFERENCES Blogs(id),
+      //     tag_id UUID REFERENCES Tags(id),
+      //     PRIMARY KEY (blog_id, tag_id)
+      //   );
 
-        CREATE TABLE Comments (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          blog_id UUID REFERENCES Blogs(id),
-          user_id UUID REFERENCES Users(id),
-          content TEXT NOT NULL,
-          posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
+      //   CREATE TABLE Comments (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     blog_id UUID REFERENCES Blogs(id),
+      //     user_id UUID REFERENCES Users(id),
+      //     content TEXT NOT NULL,
+      //     posted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      //   );
 
-        CREATE TABLE UserSubscriptions (
-          id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
-          subscriber_id UUID REFERENCES Users(id),
-          subscribed_to_id UUID REFERENCES Users(id),
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          UNIQUE (subscriber_id, subscribed_to_id)
-        );
+      //   CREATE TABLE UserSubscriptions (
+      //     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+      //     subscriber_id UUID REFERENCES Users(id),
+      //     subscribed_to_id UUID REFERENCES Users(id),
+      //     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      //     UNIQUE (subscriber_id, subscribed_to_id)
+      //   );
 
-        INSERT INTO Roles (name, description)
-        VALUES 
-          ('user', 'Default role for all new users'),
-          ('author', 'Author role'),
-          ('puser', 'Premium user role'),
-          ('admin', 'Administrator role');
-      `);
+      //   INSERT INTO Roles (name, description)
+      //   VALUES
+      //     ('user', 'Default role for all new users'),
+      //     ('author', 'Author role'),
+      //     ('puser', 'Premium user role'),
+      //     ('admin', 'Administrator role');
+      // `);
 
-      console.log(`Users table created successfully.`);
+      // console.log(`Users table created successfully.`);
     } else {
       console.log(`Users table already exists.`);
     }

@@ -3,69 +3,60 @@ const authUser = require("../middlewares/authMiddleWare");
 const fetch = require("node-fetch");
 
 const authRoutes = Router();
+const axios = require("axios");
 
 authRoutes.post("/login", authUser);
 
-const GOOGLE_ACCESS_TOKEN_URL = process.env.GOOGLE_ACCESS_TOKEN_URL;
+const CLIENT_ID =
+  "68323717873-gg97vp5qjrid9dtvl7a56lisb35sios6.apps.googleusercontent.com";
+const CLIENT_SECRET = "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";
+const REDIRECT_URI = "http://localhost:3000/api/v1/auth/google/callback";
 
-const GOOGLE_OAUTH_URL = process.env.GOOGLE_OAUTH_URL;
-
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-
-const GOOGLE_CALLBACK_URL =
-  "http%3A//localhost:3000/api/v1/auth/google/callback";
-
-const GOOGLE_OAUTH_SCOPES = [
-  "https%3A//www.googleapis.com/auth/userinfo.email",
-
-  "https%3A//www.googleapis.com/auth/userinfo.profile",
-];
-
-authRoutes.get("", async (req, res) => {
-  console.log("ededewdwe");
-  console.log("aaa");
-  const state = "some_state";
-  const scopes = GOOGLE_OAUTH_SCOPES.join(" ");
-  const GOOGLE_OAUTH_CONSENT_SCREEN_URL = `${GOOGLE_OAUTH_URL}?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${GOOGLE_CALLBACK_URL}&access_type=offline&response_type=code&state=${state}&scope=${scopes}`;
-  res.redirect(GOOGLE_OAUTH_CONSENT_SCREEN_URL);
+// Initiates the Google Login flow
+authRoutes.get("/google", (req, res) => {
+  const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=code&scope=profile email`;
+  res.redirect(url);
 });
 
-const googleRoute = () => {};
-
+// Callback URL for handling the Google Login response
 authRoutes.get("/google/callback", async (req, res) => {
-  console.log(req.query);
-
   const { code } = req.query;
 
-  const data = {
-    code,
-    client_id: GOOGLE_CLIENT_ID,
-    client_secret: GOOGLE_CLIENT_SECRET,
-    redirect_uri: "http://localhost:3000/api/v1/auth/google/callback",
-    grant_type: "authorization_code",
-  };
-  console.log(data);
+  try {
+    // Exchange authorization code for access token
+    const { data } = await axios.post("https://oauth2.googleapis.com/token", {
+      client_id: CLIENT_ID,
+      client_secret: CLIENT_SECRET,
+      code,
+      redirect_uri: REDIRECT_URI,
+      grant_type: "authorization_code",
+    });
 
-  // exchange authorization code for access token & id_token
-  const response = await fetch(GOOGLE_ACCESS_TOKEN_URL, {
-    method: "POST",
+    const { access_token, id_token } = data;
 
-    body: JSON.stringify(data),
-  });
+    // Use access_token or id_token to fetch user profile
+    const { data: profile } = await axios.get(
+      "https://www.googleapis.com/oauth2/v1/userinfo",
+      {
+        headers: { Authorization: `Bearer ${access_token}` },
+      }
+    );
 
-  const access_token_data = await response.json();
-  const { id_token } = access_token_data;
-  console.log(id_token);
+    console.log(profile);
 
-  // verify and extract the information in the id token
+    // Code to handle user authentication and retrieval using the profile data
 
-  const token_info_response = await fetch(
-    `${process.env.GOOGLE_TOKEN_INFO_URL}?id_token=${id_token}`
-  );
-  res.status(token_info_response.status).json(await token_info_response.json());
-  //   const { email, name } = token_info_data;
+    res.redirect("/kjnkjn");
+  } catch (error) {
+    console.error("Error:", error);
+    res.redirect("/login");
+  }
 });
 
-module.exports = authRoutes;
+// Logout route
+authRoutes.get("/logout", (req, res) => {
+  // Code to handle user logout
+  res.redirect("/login");
+});
+
+module.exports = { authRoutes };
