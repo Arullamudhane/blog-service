@@ -1,4 +1,4 @@
-const { pool } = require("../config/database");
+const { pool } = require("../config/databaseByPool");
 
 const createBlog = async (blogData) => {
   const { title, content, duration, isPremium } = blogData;
