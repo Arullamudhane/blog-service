@@ -26,22 +26,28 @@ const getUserModel = (sequelize, { DataTypes }) => {
     role_id: {
       type: DataTypes.UUID,
       references: {
-        model: "roles", // name of the target model
+        model: "jroles", // name of the target model
         key: "id", // key in the target model that we're referencing
       },
     },
-    created_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
-    updated_at: {
-      type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
-    },
+    // created_at: {
+    //   type: DataTypes.DATE,
+    //   defaultValue: DataTypes.NOW,
+    // },
+    // updated_at: {
+    //   type: DataTypes.DATE,
+    //   defaultValue: DataTypes.NOW,
+    // },
   });
 
   User.associate = (models) => {
-    User.hasMany(models.Role);
+    // User.belongsToMany(models.Role, {
+    //   through: models.Role,
+    //   foreignKey: "userId",
+    // });
+
+    User.belongsTo(models.Role, { foreignKey: "role_id" });
+    // User.belongsTo(models.Role, { foreignKey: "roles.id" });
   };
 
   User.findByLogin = async (login) => {
@@ -60,4 +66,4 @@ const getUserModel = (sequelize, { DataTypes }) => {
   return User;
 };
 
-module.exports = getUserModel;
+module.exports = { getUserModel };
