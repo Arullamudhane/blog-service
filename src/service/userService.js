@@ -21,17 +21,45 @@ async function createUser(userData) {
     // const newUser = await User.create(userData);
     const rolee = await Role.create({
       //   id: "d6e29c02-6325-4d3c-9abf-6bce67a4f25d", // you can provide your own UUID or let Sequelize generate it
-      name: "admin",
-      description: "Administrator with full access",
+      name: "admikjkjnkfjnkjnkjnkjnnjhb",
+      description: "Admkjkjnkjnkjninistjhbrator with full access",
     });
     console.log("====>", rolee);
-    await User.create({
+    let ttt = await User.create({
       //   id: "d6e29c02-6325-4d3c-9abf-6bce67a4f25d", // you can provide your own UUID or let Sequelize generate it
       name: "bjaaaohn_doje",
       email: "john_doje@example.com",
       password: "password123", // In a real application, ensure the password is hashed
-      role_id: rolee.id, // This should be the UUID of the admin role
     });
+
+    let ttt2 = await User.create({
+      //   id: "d6e29c02-6325-4d3c-9abf-6bce67a4f25d", // you can provide your own UUID or let Sequelize generate it
+      name: "arulljare",
+      email: "john_ddoje@example.com",
+      password: "password123", // In a real application, ensure the password is hashed
+    });
+
+    //
+
+    // const [superAdminRole, created] = await models.Role.findOrCreate({
+    //   where: { name: "superAdmin" },
+    //   defaults: { description: "Super Administrator with full access" },
+    // });
+
+    const superAdminRole = await models.User.findAll({
+      where: {
+        name: ["superAdmin"],
+      },
+    });
+
+    const users = await models.User.findAll({
+      where: {
+        name: ["bjaaaohn_doje"],
+      },
+    });
+    console.log("iuiuiui ", users);
+
+    await superAdminRole.addUsers(users);
 
     return 1;
   } catch (error) {

@@ -23,8 +23,8 @@ const getRoleModel = (sequelize, { DataTypes }) => {
     // },
   });
   Role.associate = (models) => {
-    Role.hasMany(models.User, { foreignKey: "role_id" });
-    // Role.hasMany(models.User, { foreignKey: "roles.id" });
+    Role.belongsToMany(models.User, { through: "userRoles" });
+    Role.belongsToMany(models.Permission, { through: "rolePermissions" });
   };
 
   return Role;

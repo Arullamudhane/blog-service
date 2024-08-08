@@ -7,14 +7,14 @@ const getUserModel = (sequelize, { DataTypes }) => {
     },
     email: {
       type: DataTypes.STRING,
-      allowNull: false,
       unique: true,
     },
     password_hash: {
       type: DataTypes.STRING,
     },
-    google_id: {
+    provider_id: {
       type: DataTypes.STRING,
+      unique: true,
     },
     name: {
       type: DataTypes.STRING,
@@ -23,21 +23,10 @@ const getUserModel = (sequelize, { DataTypes }) => {
     profile_picture_url: {
       type: DataTypes.STRING,
     },
-    role_id: {
-      type: DataTypes.UUID,
-      references: {
-        model: "jroles", // name of the target model
-        key: "id", // key in the target model that we're referencing
-      },
+    registration_type: {
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    // created_at: {
-    //   type: DataTypes.DATE,
-    //   defaultValue: DataTypes.NOW,
-    // },
-    // updated_at: {
-    //   type: DataTypes.DATE,
-    //   defaultValue: DataTypes.NOW,
-    // },
   });
 
   User.associate = (models) => {
@@ -46,7 +35,7 @@ const getUserModel = (sequelize, { DataTypes }) => {
     //   foreignKey: "userId",
     // });
 
-    User.belongsTo(models.Role, { foreignKey: "role_id" });
+    User.belongsToMany(models.Role, { through: "userRoles" });
     // User.belongsTo(models.Role, { foreignKey: "roles.id" });
   };
 
