@@ -106,4 +106,52 @@ authRoutes.get("/google/callback", async (req, res) => {
   }
 });
 
+//Email and pass authentication
+
+authRoutes.post("/register", async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log("1111");
+    const User = models.User;
+    let ttt = await User.create({
+      name: username,
+      email: email,
+      password_hash: hashedPassword, // In a real application, ensure the password is hashed
+      registration_type: "email",
+    });
+    // await createUser({});
+    console.log("222, ttt", ttt);
+    await res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Registration failed" });
+  }
+});
+
+// / User login
+authRoutes.post("/login", async (req, res) => {
+  try {
+    console.log("req.body");
+    const { email, password } = req.body;
+    console.log(req.body);
+    const user = await models.User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: "Authentication failed" });
+    }
+    console.log(user);
+    console.log("llll", user.password_hash);
+    const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Authentication failed" });
+    }
+    const token = createJwtToken();
+
+    res.status(200).json({ token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
 module.exports = { authRoutes };
