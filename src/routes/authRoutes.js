@@ -8,6 +8,10 @@ const dotenv = require("dotenv");
 const authRoutes = Router();
 const axios = require("axios");
 const { createJwtToken } = require("../service/jwtService");
+
+const crypto = require("crypto");
+// const bcrypt = require("bcrypt");
+const { sendEmail } = require("../service/emailServics");
 // const { emit } = require("npm");
 
 dotenv.config();
@@ -148,6 +152,43 @@ authRoutes.post("/login", async (req, res) => {
     const token = createJwtToken();
 
     res.status(200).json({ token });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: "Login failed" });
+  }
+});
+
+authRoutes.post("/reset-password", async (req, res) => {
+  try {
+    console.log("req.body");
+    const { email, password } = req.body;
+    console.log(req.body);
+    const user = await models.User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: "User not exists" });
+    }
+    console.log(user);
+    console.log("llll", user.password_hash);
+
+    let resetToken = crypto.randomBytes(32).toString("hex");
+    const hash = await bcrypt.hash(resetToken, 10);
+
+    const link = `passwordReset?token=${resetToken}&id=user._id`;
+
+    await sendEmail(
+      email,
+      "Password Reset Request",
+      "Please click the below password to reset the account \n" + link,
+      "./template/requestResetPassword.handlebars"
+    );
+
+    // const passwordMatch = await bcrypt.compare(password, user.password_hash);
+    // if (!passwordMatch) {
+    //   return res.status(401).json({ error: "Authentication failed" });
+    // }
+    // const token = createJwtToken();
+
+    res.status(200).json({ token: "" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Login failed" });
