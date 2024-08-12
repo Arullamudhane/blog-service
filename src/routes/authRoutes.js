@@ -8,6 +8,7 @@ const dotenv = require("dotenv");
 const authRoutes = Router();
 const axios = require("axios");
 const { createJwtToken } = require("../service/jwtService");
+const { Op } = require("sequelize");
 
 const crypto = require("crypto");
 // const bcrypt = require("bcrypt");
@@ -158,7 +159,7 @@ authRoutes.post("/login", async (req, res) => {
   }
 });
 
-authRoutes.post("/reset-password", async (req, res) => {
+authRoutes.post("/request-reset-password", async (req, res) => {
   try {
     console.log("req.body");
     const { email, password } = req.body;
@@ -170,29 +171,79 @@ authRoutes.post("/reset-password", async (req, res) => {
     console.log(user);
     console.log("llll", user.password_hash);
 
+    const existing_reset_tkns = await models.TokenManagement.update(
+      { status: "invalid" },
+      {
+        where: {
+          user_id: user.id,
+          token_type: "refresh",
+          status: "active",
+        },
+      }
+    );
+
     let resetToken = crypto.randomBytes(32).toString("hex");
     const hash = await bcrypt.hash(resetToken, 10);
 
-    const link = `passwordReset?token=${resetToken}&id=user._id`;
+    const newToken = await models.TokenManagement.create({
+      user_id: user.id,
+      token: hash,
+      token_type: "refresh", // Or 'access', 'blacklist'
+      status: "active", // Or 'revoked', 'expired'
+      expires_at: new Date(Date.now() + 60 * 60 * 1000), // 1 hour from now
+    });
+    const link =
+      "http://localhost:3000/api/v1/auth/reset-password" +
+      `?token=${resetToken}&id=${user.id}`;
 
-    await sendEmail(
+    let resf = await sendEmail(
       email,
       "Password Reset Request",
       "Please click the below password to reset the account \n" + link,
-      "./template/requestResetPassword.handlebars"
+      ""
     );
 
-    // const passwordMatch = await bcrypt.compare(password, user.password_hash);
-    // if (!passwordMatch) {
-    //   return res.status(401).json({ error: "Authentication failed" });
-    // }
-    // const token = createJwtToken();
+    console.log(res);
 
-    res.status(200).json({ token: "" });
+    res.status(200).send(resetToken);
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Login failed" });
   }
+});
+
+authRoutes.get("/reset-password", async (req, res) => {
+  const { token, id } = req.query;
+  // res.status(200).json({ token, id });
+  console.log("ppppppppl", token);
+
+  // Fetch the most recent active reset token for the user
+  const stored_reset_tkn = await models.TokenManagement.findOne({
+    where: {
+      user_id: id,
+      token_type: "refresh",
+      status: "active",
+      // expires_at: {
+      //   [Op.gt]: new Date(), // Ensure token has not expired
+      // },
+    },
+    order: [["created_at", "DESC"]], // Get the most recent one
+  });
+
+  if (!stored_reset_tkn) {
+    return res.status(401).json({ error: "Token not found or expired" });
+  }
+  //
+  stored_reset_tkn.status = "used";
+  await stored_reset_tkn.save();
+
+  const tkn_match = await bcrypt.compare(token, stored_reset_tkn.token);
+  if (!tkn_match) {
+    return res.status(401).json({ error: "Authentication failed" });
+  }
+  const new_token = createJwtToken({ user: { id } });
+
+  res.status(200).json({ new_token });
 });
 
 module.exports = { authRoutes };
