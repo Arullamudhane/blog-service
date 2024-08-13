@@ -6,8 +6,13 @@ const blogRoutes = Router();
 
 blogRoutes.post(
   "/create",
-  validationMiddleware.validateCreateUser,
+  // validationMiddleware.validateCreateUser,
   blogController.createBlog
 );
 
+blogRoutes.post(
+  "/update/:id",
+  // validationMiddleware.validateCreateUser,
+  blogController.updateBlog
+);
 module.exports = { blogRoutes };
