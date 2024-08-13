@@ -81,4 +81,41 @@ const updateBlog = async (blogData) => {
   }
 };
 
-module.exports = { createBlog, updateBlog };
+const deleteBlog = async (blogId) => {
+  try {
+    const blog = await models.Blog.findByPk(blogId);
+
+    if (!blog) {
+      throw new Error("Blog not found");
+    }
+
+    // Update the blog
+    const result = await models.Blog.destroy({
+      where: {
+        id: blogId,
+      },
+    });
+
+    return result;
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    throw error;
+  }
+};
+
+const getBlog = async (blogId) => {
+  try {
+    const blog = await models.Blog.findByPk(blogId);
+
+    if (!blog) {
+      throw new Error("Blog not found");
+    }
+
+    return blog;
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    throw error;
+  }
+};
+
+module.exports = { createBlog, updateBlog, deleteBlog, getBlog };
