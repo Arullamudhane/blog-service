@@ -1,4 +1,3 @@
-const { pool } = require("../config/databaseByPool");
 const { models } = require("../models");
 
 const createBlog = async (blogData) => {

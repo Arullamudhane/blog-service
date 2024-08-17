@@ -6,6 +6,7 @@ const axios = require("axios");
 const PORT = process.env.PORT || 3000;
 const blogRoutes = require("./src/routes/blogRoutes");
 const authRoutes = require("./src/routes/authRoutes");
+const commentRoutes = require("./src/routes/commentsRoutes");
 const { sequelize } = require("./src/models");
 const Sequelize = require("sequelize");
 
@@ -18,6 +19,18 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(`${version}/blog`, blogRoutes.blogRoutes);
 app.use(`${version}/auth`, authRoutes.authRoutes);
+// app.use(`${version}/blog/:blogId/comment`, commentRoutes.commentRoutes);
+
+app.use(
+  `${version}/blog/:blogId/comment`,
+  (req, res, next) => {
+    req.body.blogId = req.params.blogId;
+    next();
+  },
+  commentRoutes.commentRoutes
+);
+
+app.use(`${version}/comment`, commentRoutes.commentRoutes);
 
 app.get(`${version}/test`, (req, res) => {
   console.log("pppp");
