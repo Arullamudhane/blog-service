@@ -1,16 +1,7 @@
 const { models } = require("../models");
 
 const createBlog = async (blogData) => {
-  const { title, subtitle, content, duration, isPremium, authodId, tags } =
-    blogData;
-  await models.Blog.create({
-    title,
-    subtitle,
-    content,
-    duration,
-    isPremium,
-    authorId: "aecb3609-ef9e-47e4-b421-044b8f7581df",
-  });
+  const { title, subtitle, content, duration, isPremium, authodId } = blogData;
 
   const blog = await models.Blog.create({
     title,
@@ -21,18 +12,9 @@ const createBlog = async (blogData) => {
     authorId: "aecb3609-ef9e-47e4-b421-044b8f7581df",
   });
 
-  if (tags && Array.isArray(tags)) {
-    const tagInstances = await Promise.all(
-      tags.map((tag) => {
-        return models.Tag.findOrCreate({ where: { name: tag } });
-      })
-    );
+  console.log("hh");
+  return blog;
 
-    console.log(tagInstances);
-
-    const tagIds = tagInstances.map(([tagInstance]) => tagInstance.id);
-    await blog.setTags(tagIds);
-  }
   // const result = pool.query(``);
 };
 

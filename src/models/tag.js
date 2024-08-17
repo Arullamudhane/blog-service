@@ -12,7 +12,11 @@ const getTagModel = (sequelize, { DataTypes }) => {
   });
 
   Tag.associate = (models) => {
-    Tag.belongsToMany(models.Blog, { as: "tags", through: "blogTags" });
+    Tag.belongsToMany(models.Blog, {
+      as: "blogs",
+      through: "blogTags",
+      foreignKey: "tagId",
+    });
   };
 
   return Tag;

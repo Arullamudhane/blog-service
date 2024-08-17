@@ -1,8 +1,21 @@
 const blogRepository = require("../repositories/blogRepository");
+const tagRepository = require("../repositories/tagRepository");
 
 const createBlog = async (req, res) => {
-  await blogRepository.createBlog(req.body);
-  res.send("Home");
+  try {
+    const blog = await blogRepository.createBlog(req.body);
+    console.log("111");
+    const { tags } = req.body;
+    console.log("2222");
+    await tagRepository.createTags({ blog, tags });
+
+    res.status(200).send("Home");
+  } catch {
+    console.error("Error updating blog:", error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while creating the blog." });
+  }
 };
 
 const updateBlog = async (req, res) => {

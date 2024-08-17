@@ -47,7 +47,11 @@ const getBlogModel = (sequelize, { DataTypes }) => {
 
   Blog.associate = (models) => {
     Blog.belongsTo(models.User, { as: "author", foreignKey: "authorId" });
-    Blog.belongsToMany(models.Tag, { as: "tags", through: "blogTags" });
+    Blog.belongsToMany(models.Tag, {
+      as: "tags",
+      through: "blogTags",
+      foreignKey: "blogId",
+    });
     Blog.hasMany(models.Comment, { foreignKey: "blogId", as: "comments" });
   };
   return Blog;

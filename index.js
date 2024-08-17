@@ -7,6 +7,7 @@ const PORT = process.env.PORT || 3000;
 const blogRoutes = require("./src/routes/blogRoutes");
 const authRoutes = require("./src/routes/authRoutes");
 const commentRoutes = require("./src/routes/commentsRoutes");
+const tagRoutes = require("./src/routes/tagRoutes");
 const { sequelize } = require("./src/models");
 const Sequelize = require("sequelize");
 
@@ -31,6 +32,17 @@ app.use(
 );
 
 app.use(`${version}/comment`, commentRoutes.commentRoutes);
+
+//
+
+app.use(
+  `${version}/blog/:blogId/tags`,
+  (req, res, next) => {
+    req.body.blogId = req.params.blogId;
+    next();
+  },
+  tagRoutes.tagRoutes
+);
 
 app.get(`${version}/test`, (req, res) => {
   console.log("pppp");
