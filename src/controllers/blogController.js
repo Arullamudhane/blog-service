@@ -65,9 +65,23 @@ const getBlog = async (req, res) => {
   }
 };
 
+const getBlogByTags = async (req, res) => {
+  const blogTags = req.query.tags;
+
+  try {
+    const blog = await blogRepository.getBlogByTags(blogTags);
+    return res.status(200).json(blog);
+  } catch {
+    return res
+      .status(500)
+      .json({ error: "An error occurred while getting the blog." });
+  }
+};
+
 module.exports = {
   createBlog,
   updateBlog,
   deleteBlog,
   getBlog,
+  getBlogByTags,
 };

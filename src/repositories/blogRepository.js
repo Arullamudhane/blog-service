@@ -1,4 +1,6 @@
 const { models } = require("../models");
+const Sequelize = require("sequelize");
+const { Op } = Sequelize;
 
 const createBlog = async (blogData) => {
   const { title, subtitle, content, duration, isPremium, authodId } = blogData;
@@ -99,4 +101,39 @@ const getBlog = async (blogId) => {
   }
 };
 
-module.exports = { createBlog, updateBlog, deleteBlog, getBlog };
+const getBlogByTags = async (tagList) => {
+  try {
+    const blogTags = tagList.split(",");
+
+    console.log("aaaa=", blogTags);
+    const blogs = await models.Blog.findAll({
+      include: [
+        {
+          model: models.Tag,
+          as: "tags",
+          where: {
+            name: {
+              [Op.in]: blogTags,
+            },
+          },
+          attributes: ["name"],
+          through: { attributes: [] },
+        },
+        { model: models.User, as: "author" },
+      ],
+      distinct: true, // Avoid duplicate blogs if they have multiple matching tags
+      limit: 6,
+    });
+
+    if (!blogs) {
+      throw new Error("Blog not found");
+    }
+
+    return blogs;
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    throw error;
+  }
+};
+
+module.exports = { createBlog, updateBlog, deleteBlog, getBlog, getBlogByTags };

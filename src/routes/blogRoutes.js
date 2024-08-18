@@ -27,4 +27,10 @@ blogRoutes.get(
   // validationMiddleware.validateCreateUser,
   blogController.getBlog
 );
+
+blogRoutes.get(
+  "",
+  // validationMiddleware.validateCreateUser,
+  blogController.getBlogByTags
+);
 module.exports = { blogRoutes };
