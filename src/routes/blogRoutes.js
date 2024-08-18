@@ -34,3 +34,15 @@ blogRoutes.get(
   blogController.getBlogByTags
 );
 module.exports = { blogRoutes };
+
+blogRoutes.post(
+  "/:id/like",
+  // validationMiddleware.validateCreateUser,
+  blogController.likeBlog
+);
+
+blogRoutes.post(
+  "/:id/dislike",
+  // validationMiddleware.validateCreateUser,
+  blogController.dislikeBlog
+);

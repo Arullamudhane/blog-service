@@ -78,10 +78,45 @@ const getBlogByTags = async (req, res) => {
   }
 };
 
+const likeBlog = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    // Pass both req.body and blogId as an object
+    await blogRepository.likeBlog(blogId);
+
+    return res.status(200).json({ message: "Blog liked successfully" });
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while updating the blog." });
+  }
+};
+
+const dislikeBlog = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    // Pass both req.body and blogId as an object
+
+    // Pass both req.body and blogId as an object
+    await blogRepository.dislikeBlog(blogId);
+
+    return res.status(200).json({ message: "Blog updated successfully" });
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    return res
+      .status(500)
+      .json({ error: "An error occurred while updating the blog." });
+  }
+};
 module.exports = {
   createBlog,
   updateBlog,
   deleteBlog,
   getBlog,
   getBlogByTags,
+  likeBlog,
+  dislikeBlog,
 };

@@ -105,7 +105,6 @@ const getBlogByTags = async (tagList) => {
   try {
     const blogTags = tagList.split(",");
 
-    console.log("aaaa=", blogTags);
     const blogs = await models.Blog.findAll({
       include: [
         {
@@ -136,4 +135,42 @@ const getBlogByTags = async (tagList) => {
   }
 };
 
-module.exports = { createBlog, updateBlog, deleteBlog, getBlog, getBlogByTags };
+const likeBlog = async (blogId) => {
+  try {
+    const blog = await models.Blog.findByPk(blogId);
+
+    if (!blog) {
+      throw new Error("Blog not found");
+    }
+    blog.likesCount += 1;
+    await blog.save();
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    throw error;
+  }
+};
+
+const dislikeBlog = async (blogId) => {
+  try {
+    const blog = await models.Blog.findByPk(blogId);
+
+    if (!blog) {
+      throw new Error("Blog not found");
+    }
+    blog.dislikesCount += 1;
+    await blog.save();
+  } catch (error) {
+    console.error("Error updating blog:", error);
+    throw error;
+  }
+};
+
+module.exports = {
+  createBlog,
+  updateBlog,
+  deleteBlog,
+  getBlog,
+  getBlogByTags,
+  likeBlog,
+  dislikeBlog,
+};
